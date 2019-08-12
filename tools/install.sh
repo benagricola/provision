@@ -345,7 +345,10 @@ setcap_drp_binary() {
                 setcap "cap_net_raw,cap_net_bind_service=+ep" ${PROVISION}
             ;;
             *)
-                echo "OS Family ${OS_FAMILY} may not be able to bind privileged ports!"
+                echo "Your OS Family ${OS_FAMILY} does not support setcap " \
+                     "and may not be able to bind privileged ports when " \
+                     "running as non-root user ${SYSTEM_USER}"
+            ;;
         esac
     fi
 }
