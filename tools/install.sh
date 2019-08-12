@@ -328,7 +328,7 @@ setup_system_user() {
             adduser --system -d ${DRP_HOME_DIR} --gid ${SYSTEM_GROUP} -m --shell /sbin/nologin ${SYSTEM_USER} || RC=$?
         fi
     fi
-    if [[ ${RC} == 0 || $? == 9 ]]; then
+    if [[ ${RC} == 0 || ${RC} == 9 ]]; then
         return
     fi
     exit $?
