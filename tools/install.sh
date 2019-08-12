@@ -93,6 +93,7 @@ DRP_HOME_DIR=/var/lib/dr-provision
 _sudo="sudo"
 CLI="${BIN_DIR}/drpcli"
 CLI_BKUP="${BIN_DIR}/drpcli.drp-installer.backup"
+PROVISION="${BIN_DIR}/dr-provision"
 
 # download URL locations; overridable via ENV variables
 URL_BASE=${URL_BASE:-"https://rebar-catalog.s3-us-west-2.amazonaws.com"}
@@ -335,6 +336,18 @@ setup_system_user() {
 
 set_ownership_of_drp() {
     chown -R ${SYSTEM_USER}:${SYSTEM_GROUP} ${DRP_HOME_DIR}
+}
+
+setcap_drp_binary() {
+    if [[ $SYSTEM_USER != root ]]; then
+        case $OS_FAMILY in
+            rhel|debian)
+                setcap "cap_net_raw,cap_net_bind_service=+ep" ${PROVISION}
+            ;;
+            *)
+                echo "OS Family ${OS_FAMILY} may not be able to bind privileged ports!"
+        esac
+    fi
 }
 
 ensure_packages() {
@@ -633,6 +646,7 @@ case $MODE in
                  fi
                  setup_system_user
                  set_ownership_of_drp
+                 setcap_drp_binary
 
                  TFTP_DIR="${DRP_HOME_DIR}/tftpboot"
                  $_sudo cp "$binpath"/* "$bindest"
